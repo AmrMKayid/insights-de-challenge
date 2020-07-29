@@ -14,6 +14,16 @@ def process_input(
     input_file: str,
     verbose: bool = False,
 ) -> List:
+  """Process the input csv file into list of complaints records using complaint
+  namedtuple for storing ('Product', 'DateReceived', 'Year', 'Company')
+
+  Args:
+      input_file (str): Path for the CSV file
+      verbose (bool, optional): Debugging and printing the processed file. Defaults to False.
+
+  Returns:
+      List: List of Complaints
+  """
   complaints = []
   with open(input_file, 'r') as file:
     complaints_file = csv.DictReader(
@@ -39,6 +49,15 @@ def compute(
     complaints: List,
     verbose: bool = False,
 ) -> Dict:
+  """Computing the complaints according to the challenge specifications.
+
+  Args:
+      complaints (List): List of processed complaints
+      verbose (bool, optional): Debugging and printing the processed file. Defaults to False.
+
+  Returns:
+      Dict: Dictionary of Computed Complaints ready for output
+  """
   complaints_output = {}
 
   for record in complaints:
@@ -61,6 +80,11 @@ def compute(
 
 
 def output_report(complaints_output: dict) -> None:
+  """Writing the computed complaints to a CSV file.
+
+  Args:
+      complaints_output (dict): Dictionary of computed complaints
+  """
   complaints_output = OrderedDict(sorted(complaints_output.items()))
 
   with open(output_file, 'w') as f:
