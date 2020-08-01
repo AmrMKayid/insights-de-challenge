@@ -1,12 +1,12 @@
 import csv
 import sys
-from collections import OrderedDict, namedtuple
+from collections import Counter, OrderedDict, namedtuple
 from pprint import pprint
 from typing import Dict, List
 
 complaint = namedtuple(
     'complaint',
-    ['Product', 'DateReceived', 'Year', 'Company'],
+    ['Product', 'Year', 'Company'],
 )
 
 
@@ -33,10 +33,9 @@ def process_input(
     for record in complaints_file:
       complaints.append(
           complaint(
-              Product=record['Product'].lower(),
-              DateReceived=record['Date received'].lower(),
+              Product=record['Product'].strip().lower(),
               Year=record['Date received'].lower().split('-')[0],
-              Company=record['Company'].lower(),
+              Company=record['Company'].strip().lower(),
           ))
 
   if verbose:
@@ -61,17 +60,18 @@ def compute(
   complaints_output = {}
 
   for record in complaints:
-    complaints_output[(record.Product, record.Year)] = [0, set(), 0]
+    complaints_output[(record.Product, record.Year)] = [0, 0, Counter()]
 
   # Total Number of Complaints
   for record in complaints:
     complaints_output[(record.Product, record.Year)][0] += 1
-    complaints_output[(record.Product, record.Year)][1].add(str(record.Company))
+    complaints_output[(record.Product, record.Year)][2].update([record.Company])
 
   for key in complaints_output.keys():
-    complaints_output[key][1] = len(complaints_output[key][1])
-    complaints_output[key][2] = round(complaints_output[key][1] /
-                                      complaints_output[key][0] * 100)
+    companies = complaints_output[key][2]
+    complaints_output[key][1] = len(companies)
+    complaints_output[key][2] = round(
+        max(companies.values()) / complaints_output[key][0] * 100)
 
   if verbose:
     pprint(complaints_output)
